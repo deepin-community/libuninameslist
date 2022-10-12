@@ -1,0 +1,35 @@
+Source: libuninameslist
+Priority: optional
+Maintainer: Debian Fonts Task Force <debian-fonts@lists.debian.org>
+Uploaders: Hideki Yamane <henrich@debian.org>
+Build-Depends: debhelper-compat (= 13),
+Standards-Version: 4.6.0
+Section: libs
+Homepage: https://github.com/fontforge/libuninameslist
+Vcs-Git: https://salsa.debian.org/fonts-team/libuninameslist.git
+Vcs-Browser: https://salsa.debian.org/fonts-team/libuninameslist
+Rules-Requires-Root: no
+
+Package: libuninameslist-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends: ${misc:Depends}, libuninameslist1 (= ${binary:Version})
+Description: library of Unicode annotation data (development files)
+ The library contains a large array with one entry for each unicode code
+ point (U+0000 - U+10FFFF). Each entry contains two strings, a name and
+ an annotation. The library also contains a list of all the Unicode blocks.
+ .
+ This package contains the runtime library's development files.
+
+Package: libuninameslist1
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: library of Unicode annotation data
+ The library contains a large array with one entry for each unicode code
+ point (U+0000 - U+10FFFF). Each entry contains two strings, a name and
+ an annotation. The library also contains a list of all the Unicode blocks.
+ .
+ This package contains the runtime library.

@@ -1,0 +1,312 @@
+LibUniNamesList
+***************
+
+LibUniNamesList holds www.unicode.org Nameslist.txt data which can be useful
+for programs that need Unicode "Names", "Annotations" and block definitions.
+
+
+Accessing LibUniNamesList Information
+*************************************
+
+Older versions of LibUniNamesList consisted of static data arrays which can
+be accessed simply as arrays. This access still exists for compatibility
+with older programs that use this method. One example program using this
+older method is FontForge 20120731-b. The latest version of LibUniNamesList
+contains functions which help simplify access to the same data.
+
+Functions to access data in LibUniNamesList is listed here with the oldest
+listed first, and latest added function listed last. If more functions are
+added, they will be added to the bottom of this list.
+
+1) const char *uniNamesList_name(unsigned long uni);
+2) const char *uniNamesList_annot(unsigned long uni);
+3) const char *uniNamesList_NamesListVersion(void);
+These functions are available in libuninameslist-0.4.20140731 and higher
+4) int uniNamesList_blockCount(void);
+5) int uniNamesList_blockNumber(unsigned long uni);
+6) long uniNamesList_blockStart(int uniBlock);
+7) long uniNamesList_blockEnd(int uniBlock);
+8) const char *uniNamesList_blockName(int uniBlock);
+These functions are available in libuninameslist-20180408 and higher
+9) int uniNamesList_names2cnt(void);
+10) long uniNamesList_names2val(int count);
+11) int uniNamesList_names2getU(unsigned long uni);
+12) int uniNamesList_names2lnC(int count);
+13) int uniNamesList_names2lnU(unsigned long uni);
+14) const char *uniNamesList_names2anC(int count);
+15) const char *uniNamesList_names2anU(unsigned long uni);
+These functions are available in libuninameslist-20200413 and higher
+16) const char *uniNamesList_Languages(unsigned int lang);
+17) const char *uniNamesList_NamesListVersionAlt(unsigned int lang);
+18) const char *uniNamesList_nameAlt(unsigned long uni, unsigned int lang);
+19) const char *uniNamesList_annotAlt(unsigned long uni, unsigned int lang);
+20) int uniNamesList_nameBoth(unsigned long uni, unsigned int lang, const char **str0, const char **strl);
+21) int uniNamesList_annotBoth(unsigned long uni, unsigned int lang, const char **str0, const char **str1);
+22) int uniNamesList_blockCountAlt(unsigned int lang);
+23) long uniNamesList_blockStartAlt(int uniBlock, unsigned int lang);
+24) long uniNamesList_blockEndAlt(int uniBlock, unsigned int lang);
+25) const char *uniNamesList_blockNameAlt(int uniBlock, unsigned int lang);
+26) int uniNamesList_blockNumberBoth(unsigned long uni, unsigned int lang, int *bn0, int *bn1);
+
+For a better description of each function, check "uninameslist.h", and see
+an example of how to use these functions in FontForge ~ 20140101 or later.
+
+Alternatively, look at tests/call-test.c on how to call these functions.
+
+
+Building and Installing LibUniNamesList
+***************************************
+
+Read INSTALL for details on building LibUniNamesList using this package.
+This package contains 2 libraries, but only 1 is built by default:
+	1) libuninameslist - holds NamesList.txt data from www.unicode.org
+	2) libuninameslist-fr - currently holds French 13.0 NamesList.txt
+If you need the libuninameslist-fr library then you will also need to enable
+building it since the current default is not to build it. This will also be
+recognized in functions 16..26 listed above as lang=1 (English=default=0).
+	$ ./configure
+	$ make
+	$ su
+	# make install (or use 'make install-strip' for smaller libraries).
+	# exit
+	$
+
+Alternatively, if you do not have autoconf or automake available with your
+computer, you can fetch the configure-ready libuninameslist-dist version.
+
+
+Building and Installing LibUniNamesList and LibUniNamesList-fr
+**************************************************************
+
+The French library was built with the intention of maintaining backwards
+compatibility with older programs (like FontForge 20120731), so it is a
+separate library, but in this case, it is also linked to the base library.
+If you ran 'configure' and 'make' earlier, you need to run 'make clean'
+to remove the earlier libuninameslist (which won't link to this library).
+
+NOTE: You may need to run 'make clean' if you ran "./configure; make" earlier.
+	$ ./configure --enable-frenchlib
+	$ make clean
+	$ make
+	$ su
+	# make install (or use 'make install-strip' for smaller libraries).
+	# exit
+	$
+
+Some platforms will work fine with the commands above, while others will
+have trouble with not finding the French library because it does not exist
+yet in your libraries. Here are three different variations:
+Linux install (recent x86/amd64 distro):
+	$ ./configure --enable-frenchlib
+	$ make check
+	$ sudo make install
+	$
+
+Linux install (recent s390x distro):
+	$ ./configure --enable-frenchlib
+	$ make
+	$ sudo make install
+	$ make check
+	$
+This is a bit of a cheat - we install the French libuninameslist-fr so it
+is found by our 'to_check' libuninameslist when it uses -luninameslist-fr
+
+Linux install (recent arm64 distro):
+	$ ./configure --enable-frenchlib
+	$ make
+	$ sudo make install
+	$ make check
+	$
+This fails make because of not finding the French libuninameslist, but will
+pass 'make check' after both libraries are installed.
+
+libuninameslist needs further improvements to avoid the above 'make' quirk,
+but both libraries appear usable after being built and installed.
+
+
+Added 'uninameslist.py' Python Wrapper
+**************************************
+
+A python wrapper is provided for users interested in libuninameslist access
+using python. The easiest and simplest method for users to add it is to run
+the install in two steps, first build and install libuninameslist, then use
+python to install the wrapper:
+	$ ./configure (may need --/prefix=/usr - use --help to see options)
+	$ make clean
+	$ make
+	$ su
+	# make install
+	# cd py
+	# python setup.py install
+	# exit
+	$
+
+The build system can optionally also build installable wheels of the package.
+To do this, pass --enable-pylib. Optionally, also set the `PYTHON` environment
+variable to configure which python to use. The configured python must have pip,
+setuptools and the wheel packages installed.
+
+	$ PYTHON=python2 ./configure --enable-pylib (may need --/prefix=/usr)
+	$ make
+	$ su
+	# make install
+	# pip install py/dist/*.whl
+	# exit
+	$
+
+Normally, a user default library install is made into '/usr/local', but for
+some operating systems, you may need you to add '--prefix=/usr' if you will
+be adding python access to uninameslist.py
+
+This two-step install is necessary to avoid using AM_PATH_PYTHON() as part
+of './configure' which interferes with installs that cannot include python.
+
+Distro maintainers may also want to look at Adelie which has a great install:
+https://code.foxkit.us/adelie/packages/blob/master/user/libuninameslist/APKBUILD
+
+
+Default Build Process
+*********************
+
+The default build process can be summarized quickly like this:
+
+	Download LibUniNamesList*.tar.gz
+	Move it somewhere appropriate (temp perhaps?) and type:
+	$ tar -xzf libuninameslist*.tar.gz
+	$ cd libuninameslist????????
+	$ autoreconf -i
+	$ automake
+	$ ./configure
+	$ make
+	$ su
+	# make install-strip
+	# exit
+	$
+
+The above steps work for both release or latest versions of libuninameslist.
+Release versions provided by your distro may include a configure script which
+allows you to skip extra package requirements (for autotools, automake), and
+you would skip steps autoreconf -i, automake above, and start at ./configure
+
+To see what options are available before running make, type
+
+	$ ./configure --help
+
+
+NOTE: Some Distros and Operating Systems may require you to run 'ldconfig' to
+recognize LibUniNamesList if you are not rebooting your computer first before
+loading another program that depends on LibUniNamesList. To do this, you may
+need to run 'ldconfig' in 'su -' mode after you have done 'make install':
+
+	$ su -
+	# ldconfig
+	# exit
+	$
+
+
+How to Update LibUniNamesList (for maintainers)
+***********************************************
+
+The main purpose for LibUniNamesList is to contain a current copy of the
+latest updated version of Nameslist.txt as published by www.unicode.org
+which can then be accessed by users needing this information.
+
+This means every now and then, LibUniNamesList needs to be updated with new
+information. To do this, you will need to get the latest NamesList.txt file
+from www.unicode.org which will then be used to build a new namelist.c file.
+
+Let's say the next version of NamesList is version 8.0.
+1) Update configure.ac with the new timestamp:
+	uninameslist_package_stamp [20150701]	<-"YYYYMMDD" format
+2) Update configure.ac with the new NamesList version:
+	uninameslist_nameslist_ver [8.0]
+3) Increment the point release, was 0.4, now becomes 0.5. NOTE: This minor
+   point number may get large since LibUniNamesList is backwards compatible.
+	uninameslist_major_version [0]
+	uninameslist_minor_version [5]
+   (if a future update of ListeDesNoms.txt >7.0 appears, then update this;
+	fr_major_version [0]
+	fr_minor_version [4] )
+4) Update the config system, and create a versioned buildnameslist.h:
+	autoreconf -i -Wall
+	automake --foreign
+	./configure
+5) Build the buildnameslist program:
+	make
+6) Import "NamesList.txt" and "ListeDesNoms.txt" into the same directory:
+	make NamesList.txt
+	make ListeDesNoms.txt
+7) Create new updated {nameslist*.c, uninameslist*.h} files:
+	./buildnameslist
+	make clean
+	make
+
+Some operating systems have older or incomplete autoconf, automake, autotools
+and it is best to provide a release that already contains ./configure without
+needing autotools.
+
+To build a release version containing ./configure it is best to clone a copy
+into a fresh directory, and then remove all hidden files and directories to
+reduce the final release size. You should also fetch the latest config.guess
+and config.sub because your computer may have an older version - example:
+
+	$ git tag 20210626
+	$ git push origin
+	$ git push origin --tags
+	$ cd ~
+	$ cp -pR libuninameslist_master libuninames_release
+	$ cd libuninames_release
+	$ rm -fR .git .github .appveyor.yml .travis.yml
+	$ wget -O config.guess 'https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD'
+	$ wget -O config.sub 'https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD'
+	$ autoreconf -i
+	$ automake --foreign
+	$ ./configure
+	$ make dist
+	$ make distcheck
+	$ ls -l libuninameslist*.tar.gz
+
+When done, there will be a *.tar.gz file created in your directory. To avoid
+confusing the downloadable github version from the release version containing
+./configure it is best to rename this *.tar.gz file with the added '-dist'
+
+	$ mv libuninameslist-20210626.tar.gz libuninameslist-dist-20210626.tar.gz
+
+
+Added note: Going from Unicode 8.0 to 9.0, both of these libraries listed are
+now bumped to 1.0 since this can be seen as a large change due to the library
+compilation of the CRA being confused with Major Minor versioning.
+Backwards compatibility for accessing data still remains intact for programs
+that require access using older methods.
+Users running older programs can recompile them to use the newer libraries or
+optionally use a link pointing to the new libraries if cannot recompile them.
+
+
+Adding And/Or Updating Languages (for translators)
+**************************************************
+
+If you are interested in adding a new language but don't know where to start,
+then first recommendation is get a hold of the latest NamesList.txt file from
+www.unicode.org and start with that first. You will want to use some sort of
+plain text editor able to edit UTF-8 style files.
+If you are interested in updating an existing file, there are some references
+pointing to where latest NamesList style files were found, see in Makefile.am
+or other nameslist*.c or uninameslist*.h for possible information if not seen
+on readme files. Ask originating Authors if they want/need help if looking at
+updating existing file (this is a large file, but can be done progressively).
+If you are aware of translations in another format, they could be considered,
+and functions 16 to 26 are available for displaying alternate languages.
+
+
+Old Bugs Out, New Bugs In
+*************************
+
+If you have user type questions, a good place to look, or ask is:
+	https://sourceforge.net/p/fontforge/mailman/fontforge-users/
+	fontforge-devel@lists.sourceforge.net
+
+Please report any bugs, patches and/or improvements to:
+	fontforge-devel@lists.sourceforge.net
+
+This file was last updated:
+	2021-Jun-26, by Joe Da Silva
